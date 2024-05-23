@@ -1,9 +1,6 @@
 ## Overview
 This repository is made for self-taught purpose, providing a simplified implementation of the attention mechanism, covering the naive implementation, flash attention 1, and flash attention 2.
 
-## Key Differences
-Unlike above implementations this repository implements parallel computation over the sequence length (in flash attention 2), as suggested in the paper.
-
 ## Build and Run
 This repository includes a Makefile to automate the building and running of the CUDA programs. Simply run the following command:
 
@@ -40,3 +37,6 @@ The implementation in this repository follows the ideas and approaches presented
 - [https://github.com/66RING/tiny-flash-attention]
 - [https://github.com/tspeterkim/flash-attention-minimal]
 - [https://github.com/leloykun/flash-hyperbolic-attention-minimal]
+
+## Key Differences
+Unlike above implementations this repository implements parallel computation over the sequence length (in flash attention 2), as suggested in the paper.
