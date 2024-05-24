@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <include/helper.cuh>
-#include <include/self_attention.cuh>
-#include <include/flash_attn_1.cuh>
-#include <include/flash_attn_2.cuh>
+#include <helper.cuh>
+#include <self_attention.cuh>
+#include <flash_attn_1.cuh>
+#include <flash_attn_2.cuh>
 
 // helper function
 void print_device_tensor(float* matrix, int m, int n);

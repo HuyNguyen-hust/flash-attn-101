@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cassert>
 
-#include <include/helper.cuh>
+#include <helper.cuh>
 
 // helper function
 void print_device_tensor(float* matrix, int m, int n);

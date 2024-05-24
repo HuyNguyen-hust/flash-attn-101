@@ -1,4 +1,4 @@
 run: build
 	./bench
 build:
-	nvcc -o bench src/*
+	nvcc -Iinclude -o bench src/*
