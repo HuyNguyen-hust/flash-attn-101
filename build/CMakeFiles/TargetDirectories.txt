@@ -1,0 +1,6 @@
+/projects/uonlp/huy/cuda_101/flash-attn-101/build/CMakeFiles/rebuild_cache.dir
+/projects/uonlp/huy/cuda_101/flash-attn-101/build/CMakeFiles/edit_cache.dir
+/projects/uonlp/huy/cuda_101/flash-attn-101/build/csrc/CMakeFiles/edit_cache.dir
+/projects/uonlp/huy/cuda_101/flash-attn-101/build/csrc/CMakeFiles/rebuild_cache.dir
+/projects/uonlp/huy/cuda_101/flash-attn-101/build/csrc/CMakeFiles/flash-attn-101.dir
+/projects/uonlp/huy/cuda_101/flash-attn-101/build/csrc/CMakeFiles/profile-attention.dir
