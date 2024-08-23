@@ -63,7 +63,7 @@ __global__ void flash_attention_1_kernel(
             for (int k = 0; k < Bc; k++) {
                 if (j * Bc + k >= seq_len)
                     break;
-                T sum = 0.0f;
+                T sum = static_cast<T>(0.0f);
                 for (int d = 0; d < head_dim; d++) {
                     sum += s_Qi[threadIdx.x * head_dim + d] * s_Kj[k * head_dim + d];
                 }
@@ -79,12 +79,12 @@ __global__ void flash_attention_1_kernel(
             // P_ij = __expf(Sij - cur_m_ij) , s_S <-- P_ij
             // cur_l_ij = row_sum(P_ij)
             // li_new = __expf(mi-mi_new) * li + __expf(cur_m_ij - mi_new) * cur_l_ij
-            T cur_l_ij = 0.0f;
+            T cur_l_ij = static_cast<T>(0.0f);
             for (int k = 0; k < Bc; k++) {
                 if (j * Bc + k >= seq_len)
                     break;
                 if (i * Br + threadIdx.x < j * Bc + k) {
-                    s_S[threadIdx.x * Bc + k] = 0.0f;
+                    s_S[threadIdx.x * Bc + k] = static_cast<T>(0.0f);
                 } else {
                     s_S[threadIdx.x * Bc + k] = __expf(s_S[threadIdx.x * Bc + k] - cur_m_ij);
                 }
@@ -102,7 +102,7 @@ __global__ void flash_attention_1_kernel(
 
             for (int d = 0; d < head_dim; d++) {
                 // for loop over Bc
-                T pv = 0.0f;
+                T pv = static_cast<T>(0.0f);
                 for (int k = 0; k < Bc; k++) {
                     if (j * Bc + k >= seq_len)
                     {
@@ -163,8 +163,9 @@ void launch_flash_attention_01(
     dim3 block(Br);
     
     const int sram_size = (3 * Bc * head_dim * sizeof(T)) + (Bc * Br * sizeof(T));
+    cudaFuncSetAttribute(flash_attention_1_kernel<T>, cudaFuncAttributeMaxDynamicSharedMemorySize, sram_size);
 
-    flash_attention_1_kernel<<<grid, block, sram_size>>>(
+    flash_attention_1_kernel<T><<<grid, block, sram_size>>>(
         Q, K, V, O,
         d_l_ptr, d_m_ptr, 
         Tr, Tc, Br, Bc, 
@@ -183,13 +184,3 @@ template void launch_flash_attention_01<float>
     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );
-
-// template void launch_flash_attention_01<__half>
-// (
-//     const __half *Q,
-//     const __half *K,
-//     const __half *V,
-//     __half *O,
-//     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
-//     cudaStream_t stream
-// );

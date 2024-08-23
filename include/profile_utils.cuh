@@ -7,6 +7,7 @@
 #include <functional>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
+#include <cuda_fp16.h>
 
 #include "cuda_utils.hpp"
 #include "cuda_attn.hpp"
@@ -20,7 +21,7 @@ void initialize_random_matrix(T* A, unsigned int size, unsigned int seed)
 {
     // create a generator
     std::default_random_engine engine(seed);
-    std::uniform_real_distribution<T> distribution(0.0, 1.0);
+    std::uniform_real_distribution<float> distribution(0.0, 1.0);
     auto const generator = [&engine, &distribution]() {
         return distribution(engine);
     };
@@ -36,7 +37,7 @@ template <typename T>
 bool all_close(
     const T* A, const T* A_ref,
     unsigned int size,
-    float abs_tol, T rel_tol
+    T abs_tol, double rel_tol
 )
 {
     // cast all computation into double for accurate check
@@ -79,7 +80,7 @@ std::pair<float, float> profile_attention(
         cudaStream_t
     )> attention_launcher,
     unsigned int num_warmups, unsigned int num_repeats,
-    float abs_tol, T rel_tol,
+    T abs_tol, double rel_tol,
     unsigned int seed = 0
 )
 {

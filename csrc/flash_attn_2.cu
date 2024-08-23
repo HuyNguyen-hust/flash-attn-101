@@ -43,7 +43,7 @@ __global__ void flash_attention_2_kernel(
 
     // li, mi initialization
 
-    T li = 0.0f;
+    T li = static_cast<T>(0.0f);
     T mi = -INFINITY;
     T last_mi;
     T last_li;
@@ -71,7 +71,7 @@ __global__ void flash_attention_2_kernel(
             if (j * Bc + k > block_id * Br + threadIdx.x) {
                 break;
             }
-            T sum = 0.0f;
+            T sum = static_cast<T>(0.0f);
             for (int d = 0; d < head_dim; d++) {
                 sum += s_Qi[threadIdx.x * head_dim + d] * s_Kj[k * head_dim + d];
             }
@@ -84,7 +84,7 @@ __global__ void flash_attention_2_kernel(
 
         // P_ij = exp(Sij - mi), s_S <-- P_ij
         // rowsum(Pij)
-        T rowsum = 0.0f;
+        T rowsum = static_cast<T>(0.0f);
         for (int k = 0; k < Bc; k++) {
             if (j * Bc + k >= seq_len) {
                 break;
@@ -108,7 +108,7 @@ __global__ void flash_attention_2_kernel(
         int Oi_offset = QKV_offset + block_id * Br * head_dim;
         for (int d = 0; d < head_dim; d++) {
             // pv = Pij * Vj
-            T pv = 0.0f;
+            T pv = static_cast<T>(0.0f);
             for (int k = 0; k < Bc; k++) {
                 if (j * Bc + k >= seq_len) {
                     break;
@@ -162,8 +162,9 @@ void launch_flash_attention_02(
     dim3 block(Br);
 
     const int sram_size = (3 * Bc * head_dim * sizeof(T)) + (Bc * Br * sizeof(T));
+    cudaFuncSetAttribute(flash_attention_2_kernel<T>, cudaFuncAttributeMaxDynamicSharedMemorySize, sram_size);
     
-    flash_attention_2_kernel<<<grid, block, sram_size>>>(
+    flash_attention_2_kernel<T><<<grid, block, sram_size>>>(
         Q, K, V, O,
         d_L_ptr,
         Tr, Tc, Br, Bc,
@@ -182,13 +183,3 @@ template void launch_flash_attention_02<float>
     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );
-
-// template void launch_flash_attention_02<__half>
-// (
-//     const __half *Q,
-//     const __half *K,
-//     const __half *V,
-//     __half *O,
-//     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
-//     cudaStream_t stream
-// );

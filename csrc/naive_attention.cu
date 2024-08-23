@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cuda_runtime.h>
 #include <thrust/device_vector.h>
+#include <cuda_fp16.h>
 
 #include "cuda_attn.hpp"
 
@@ -48,7 +49,7 @@ __global__ void naive_softmax(
     int idx = threadIdx.x + blockDim.x * blockIdx.x;
 
     T row_max = -INFINITY;
-    T sum = 0.f;
+    T sum = static_cast<T>(0.f);
 
     // max
     for (int j = 0; j < N; j++) {
@@ -58,7 +59,7 @@ __global__ void naive_softmax(
     // sum
     for (int j = 0; j < N; j++) {
         if (j > threadIdx.x) {
-            output[idx * N + j] = 0.f;
+            output[idx * N + j] = static_cast<T>(0.f);
         }
         else {
         output[idx * N + j] = __expf(input[idx * N + j] - row_max);
@@ -85,7 +86,7 @@ __global__ void naive_pv(
     int idx = threadIdx.x + blockDim.x * blockIdx.x;
 
     for (int j = 0; j < N; j++) {
-        T sum = 0.f;
+        T sum = static_cast<T>(0.f);
         for (int m = 0; m < M; m++) {
             sum += P[idx * M + m] * V[(blockDim.x * blockIdx.x + m) * N + j];
         }
@@ -140,13 +141,3 @@ template void launch_naive_attention<float>
     unsigned  batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );
-
-// template void launch_naive_attention<__half>
-// (
-//     const __half *Q,
-//     const __half *K,
-//     const __half *V,
-//     __half *O,
-//     unsigned  batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
-//     cudaStream_t stream
-// );
