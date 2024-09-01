@@ -130,7 +130,7 @@ __global__ void flash_attention_2_kernel(
     }
     // store Li to HBM
     int li_offset = L_offset + block_id * Br;
-    L[li_offset + threadIdx.x] = mi + logf(li);
+    L[li_offset + threadIdx.x] = mi + static_cast<T>(logf(li));
 }
 
 // launch
@@ -174,12 +174,22 @@ void launch_flash_attention_02(
 }
 
 // explicit instantiation
-template void launch_flash_attention_02<float>
+// template void launch_flash_attention_02<float>
+// (
+//     const float *Q,
+//     const float *K,
+//     const float *V,
+//     float *O,
+//     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
+//     cudaStream_t stream
+// );
+
+template void launch_flash_attention_02<half>
 (
-    const float *Q,
-    const float *K,
-    const float *V,
-    float *O,
+    const half *Q,
+    const half *K,
+    const half *V,
+    half *O,
     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );

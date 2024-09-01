@@ -132,12 +132,22 @@ void launch_naive_attention(
 }
 
 // explicit instantiation
-template void launch_naive_attention<float>
+// template void launch_naive_attention<float>
+// (
+//     const float *Q,
+//     const float *K,
+//     const float *V,
+//     float *O,
+//     unsigned  batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
+//     cudaStream_t stream
+// );
+
+template void launch_naive_attention<half>
 (
-    const float *Q,
-    const float *K,
-    const float *V,
-    float *O,
+    const half *Q,
+    const half *K,
+    const half *V,
+    half *O,
     unsigned  batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );

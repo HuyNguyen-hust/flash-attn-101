@@ -90,7 +90,7 @@ __global__ void flash_attention_1_kernel(
                 }
                 cur_l_ij += s_S[threadIdx.x * Bc + k];                
             }
-            T li_new = __expf(mi - mi_new) * li + __expf(cur_m_ij - mi_new) * cur_l_ij;
+            T li_new = static_cast<T>(__expf(mi - mi_new)) * li + static_cast<T>(__expf(cur_m_ij - mi_new)) * cur_l_ij;
             
             // alpha = __expf(mi-mi_new)
             // beta = __expf(cur_m_ij - mi_new)
@@ -111,7 +111,7 @@ __global__ void flash_attention_1_kernel(
                     pv += s_S[threadIdx.x * Bc + k] * s_Vj[k * head_dim + d];
                 }
             
-                O[Oi_offset + threadIdx.x * head_dim + d] = (1.0f / li_new) \
+                O[Oi_offset + threadIdx.x * head_dim + d] = (static_cast<T>(1.0f) / li_new) \
                 * (li * alpha * O[Oi_offset + threadIdx.x * head_dim + d] \
                 + beta * pv);
             }
@@ -175,12 +175,22 @@ void launch_flash_attention_01(
 }
 
 // explicit instantiation
-template void launch_flash_attention_01<float>
+// template void launch_flash_attention_01<float>
+// (
+//     const float *Q,
+//     const float *K,
+//     const float *V,
+//     float *O,
+//     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
+//     cudaStream_t stream
+// );
+
+template void launch_flash_attention_01<half>
 (
-    const float *Q,
-    const float *K,
-    const float *V,
-    float *O,
+    const half *Q,
+    const half *K,
+    const half *V,
+    half *O,
     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );

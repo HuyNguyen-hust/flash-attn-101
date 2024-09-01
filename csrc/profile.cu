@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cuda_fp16.h>
 #include <functional>
 
 #include "cuda_attn.hpp"
@@ -16,8 +17,8 @@ int main()
     unsigned int num_warmups = 1U;
     unsigned int num_repeats = 1U;
 
-    float abs_tol = 1.0e-3f;
-    double rel_tol = 0.0e-4f;
+    __half const abs_tol{__float2half(5.0e-2f)};
+    double const rel_tol{1.0e-1f};
 
     // print attention settings
     std::cout << "batch size = " << batch_size << std::endl;
@@ -30,24 +31,24 @@ int main()
             std::string,
             std::function<
                 void(
-                    const float*,
-                    const float*,
-                    const float*,
-                    float*,
+                    const __half*,
+                    const __half*,
+                    const __half*,
+                    __half*,
                     unsigned int, unsigned int, unsigned int, unsigned int,
                     cudaStream_t stream
                 )
             >
         >
     > attention_launchers = {
-        {"attention 01", launch_flash_attention_01<float>},
-        {"attention 02", launch_flash_attention_02<float>}
+        {"attention 01", launch_flash_attention_01<__half>},
+        {"attention 02", launch_flash_attention_02<__half>}
     };
 
     for (const auto& [name, attention_launcher] : attention_launchers) {
         std::cout << "-------------------------------------------------" << std::endl;
         std::cout << "attention: " << name << std::endl;
-        std::pair<float, float> results = profile_attention<float>(
+        std::pair<__half, __half> results = profile_attention<__half>(
             batch_size, num_heads, seq_len, head_dim,
             attention_launcher,
             num_warmups, num_repeats,
