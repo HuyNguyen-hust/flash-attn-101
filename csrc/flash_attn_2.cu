@@ -184,12 +184,12 @@ void launch_flash_attention_02(
 //     cudaStream_t stream
 // );
 
-template void launch_flash_attention_02<half>
+template void launch_flash_attention_02<__half>
 (
-    const half *Q,
-    const half *K,
-    const half *V,
-    half *O,
+    const __half *Q,
+    const __half *K,
+    const __half *V,
+    __half *O,
     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );

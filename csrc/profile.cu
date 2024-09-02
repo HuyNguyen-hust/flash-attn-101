@@ -11,8 +11,8 @@ int main()
     print_device_info();
     unsigned int batch_size = 8U;
     unsigned int num_heads = 16U;
-    unsigned int seq_len = 1024U;
-    unsigned int head_dim = 64U;
+    unsigned int seq_len = 256U;
+    unsigned int head_dim = 64U; // just implement for 32 and 64
 
     unsigned int num_warmups = 1U;
     unsigned int num_repeats = 1U;
@@ -41,14 +41,15 @@ int main()
             >
         >
     > attention_launchers = {
-        {"attention 01", launch_flash_attention_01<__half>},
-        {"attention 02", launch_flash_attention_02<__half>}
+        {"cuda core flash attention 01", launch_flash_attention_01<__half>},
+        {"cuda core flash attention 02", launch_flash_attention_02<__half>},
+        {"cute flash attention 02", mha_fwd<__half>},
     };
 
     for (const auto& [name, attention_launcher] : attention_launchers) {
         std::cout << "-------------------------------------------------" << std::endl;
-        std::cout << "attention: " << name << std::endl;
-        std::pair<__half, __half> results = profile_attention<__half>(
+        std::cout << "implementation: " << name << std::endl;
+        std::pair<float, float> results = profile_attention<__half>(
             batch_size, num_heads, seq_len, head_dim,
             attention_launcher,
             num_warmups, num_repeats,

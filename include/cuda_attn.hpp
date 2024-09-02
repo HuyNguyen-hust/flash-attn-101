@@ -31,3 +31,13 @@ void launch_flash_attention_02(
     unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
     cudaStream_t stream
 );
+
+template <typename T>
+void mha_fwd(
+    const T *Q,
+    const T *K,
+    const T *V,
+    T *O,
+    unsigned int batch_size, unsigned int num_heads, unsigned int seq_len, unsigned int head_dim,
+    cudaStream_t stream
+);

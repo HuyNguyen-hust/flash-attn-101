@@ -8,6 +8,7 @@
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 #include <cuda_fp16.h>
+#include <cutlass/numeric_types.h>
 
 #include "cuda_utils.hpp"
 #include "cuda_attn.hpp"
