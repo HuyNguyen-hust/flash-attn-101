@@ -11,6 +11,8 @@ This repository provides a simplified implementation of the attention mechanism 
 | CUDA core Flash Attention 2 (FA2) | `csrc/flash_attn_2.cu` |
 | Tensor core FA2 using CUTLASS CuTe | `csrc/flash_attn/` |
 
+The python binding version of Tensor core FA2 using CUTLASS CuTe can be found here [CuTe FA2 python binding](https://github.com/HuyNguyen-hust/cute-flash-attn-101)
+
 ## Build and Run
 Use the provided CMakeLists.txt to build and run the CUDA programs:
 
